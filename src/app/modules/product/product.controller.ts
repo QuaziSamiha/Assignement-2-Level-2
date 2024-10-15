@@ -28,12 +28,40 @@ const getAllProducts = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log("There is error to get all products from db");
-    console.log(error);
+    // console.log("There is error to get all products from db");
+    // console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error,
+    });
+  }
+};
+
+const getAProduct = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    console.log(productId);
+    const result = await ProductServices.getProductByID(productId);
+    console.log(result);
+    res.status(200).json({
+      success: true,
+      message: "A product is fetched",
+      data: result,
+    });
+  } catch (error) {
+    // console.log("product retrieved base on id failed");
+    // console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error,
+    });
   }
 };
 
 export const ProductControllers = {
   createProduct,
   getAllProducts,
+  getAProduct,
 };
