@@ -30,7 +30,7 @@ const productInventorySchemaZod = z.object({
 const productSchemaZod = z.object({
   productName: z.string({
     required_error: "Product name is required",
-    invalid_type_error: "Product name is must be string",
+    invalid_type_error: "Product name must be string",
   }),
   productDescription: z.string({
     required_error: "Product description is required",
