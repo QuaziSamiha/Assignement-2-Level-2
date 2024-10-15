@@ -18,6 +18,17 @@ const getProductByID = async (id: string) => {
   return result;
 };
 
+//* ---------------- UPDATE A SINGLE PRODUCT BY ID -----------------------------
+const updateProductByID = async (
+  productId: string,
+  updatedData: Partial<IProduct>
+) => {
+  const result = await ProductModel.findByIdAndUpdate(productId, updatedData, {
+    new: true,
+  });
+  return result;
+};
+
 //* ---------------- DELETE A SINGLE PRODUCT BY ID -----------------------------
 const deleteProductByID = async (id: string) => {
   const result = await ProductModel.findByIdAndDelete({ _id: id });
@@ -29,4 +40,5 @@ export const ProductServices = {
   getAllProductsFromDB,
   getProductByID,
   deleteProductByID,
+  updateProductByID,
 };
