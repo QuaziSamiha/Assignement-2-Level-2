@@ -30,5 +30,5 @@ const productSchema = new Schema<IProduct>({
   productInventory: { type: productInventorySchema, required: true },
 });
 
-// Create Mongoose model
+// Creating Mongoose model for product
 export const ProductModel = model<IProduct>("Product", productSchema);
