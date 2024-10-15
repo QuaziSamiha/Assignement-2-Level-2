@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.post("/", ProductControllers.createProduct);
 // http://localhost:3100/api/products
+// or
+// http://localhost:3100/api/products?searchTerm=Audio
 
 router.get("/", ProductControllers.getAllProducts);
 // http://localhost:3100/api/products

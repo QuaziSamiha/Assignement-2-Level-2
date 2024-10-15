@@ -21,19 +21,36 @@ const createProduct = async (req: Request, res: Response) => {
 };
 
 //? ==================================== GET ALL PRODUCT =========================================
+// const getAllProducts = async (req: Request, res: Response) => {
+//   try {
+//     const result = await ProductServices.getAllProductsFromDB();
+//     res.status(200).json({
+//       success: true,
+//       message: "All products retrieved successfully",
+//       data: result,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Something went wrong to get all product",
+//       error: error,
+//     });
+//   }
+// };
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const result = await ProductServices.getAllProductsFromDB();
+    const searchTerm = req.query.searchTerm as string;
+    const result = await ProductServices.getAllProductsFromDB(searchTerm);
     res.status(200).json({
       success: true,
-      message: "All products retrieved successfully",
+      message: `Products matching search term '${searchTerm}' fetched successfully!`,
       data: result,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong to get all product",
-      error: error,
+      message: "Error fetching products",
+      error,
     });
   }
 };

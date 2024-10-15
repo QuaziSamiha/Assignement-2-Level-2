@@ -1,14 +1,34 @@
 import { ProductModel } from "./product.model";
 import { IProduct } from "./product.interface";
 
+//* ---------------- CRETE PRODUCT BY ID -----------------------------
 const createProductIntoDB = async (product: IProduct) => {
   // console.log(product);
   const result = await ProductModel.create(product);
   return result;
 };
 
-const getAllProductsFromDB = async () => {
-  const result = await ProductModel.find();
+//* ---------------- GET ALL PRODUCTS FROM DB -----------------------------
+// const getAllProductsFromDB = async () => {
+//   const result = await ProductModel.find();
+//   return result;
+// };
+
+const getAllProductsFromDB = async (searchTerm?: string) => {
+  let query = {};
+
+  if (searchTerm) {
+    query = {
+      $or: [
+        { productName: { $regex: searchTerm, $options: "i" } },
+        { productDescription: { $regex: searchTerm, $options: "i" } },
+        { productCategory: { $regex: searchTerm, $options: "i" } },
+        { productTags: { $regex: searchTerm, $options: "i" } },
+      ],
+    };
+  }
+
+  const result = await ProductModel.find(query);
   return result;
 };
 
