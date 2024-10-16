@@ -1,7 +1,7 @@
 import { ProductModel } from "./product.model";
 import { IProduct } from "./product.interface";
 
-//* ---------------- CRETE PRODUCT BY ID -----------------------------
+//* ---------------- CREATE PRODUCT BY ID -----------------------------
 const createProductIntoDB = async (product: IProduct) => {
   // console.log(product);
   const result = await ProductModel.create(product);
