@@ -3,75 +3,75 @@ import { OrderModel } from "./order.model";
 import { ProductModel } from "../product/product.model";
 //* ---------------- CREATE ORDER BY ID -----------------------------
 const createOrderIntoDB = async (order: IOrder) => {
-  // console.log("order", order);
+	// console.log("order", order);
 
 	// ! GETTING PRODUCT DETAILS FROM ORDER
-  const productId = order?.productId;
-  const orderQuantity = order?.quantity;
+	const productId = order?.productId;
+	const orderQuantity = order?.quantity;
 
-  try {
-    const product = await ProductModel.findById(productId); //! GETTING PRODUCT OF SPECIFIC ID
+	try {
+		const product = await ProductModel.findById(productId); //! GETTING PRODUCT OF SPECIFIC ID
 
-    // console.log("productQuantity", product?.productInventory?.inventory.quantity);
+		// console.log("productQuantity", product?.productInventory?.inventory.quantity);
+		// console.log("inStock", product?.productInventory?.inventory.inStock);
 
-    console.log("inStock", product?.productInventory?.inventory.inStock);
+		const productQuantity = product?.productInventory?.inventory.quantity; //! GETTING CURRENT PRODUCT QUANTITY
 
-    const productQuantity = product?.productInventory?.inventory.quantity;
+		const inStock = product?.productInventory?.inventory.inStock; //! GETTING CURRENT INSTOCK STATE
 
-    const inStock = product?.productInventory?.inventory.inStock;
+		// * -------------------- BONUS TASK --------------------
+		// *========== IF PRODUCT IS NOT AVAILABLE IN STOCK ===========
+		if (inStock === false) {
+			throw new Error("Stock is not available");
+		}
 
-    if (inStock === false) {
-      throw new Error("Stock is not available");
-    }
+		// * -------------- IF ORDER QUANTITY IS GREATER THAN AVAILABE INVENTORY QUANTITY -------------
+		if (productQuantity !== undefined && orderQuantity !== undefined) {
+			if (productQuantity < orderQuantity) {
+				throw new Error(
+					`Insufficient stock. Available: ${productQuantity}, Requested: ${orderQuantity}`
+				);
+			}
+			//! Calculate the new product quantity after placing the order
+			const newProductQuantity = productQuantity - orderQuantity;
+			product.productInventory.inventory.quantity = newProductQuantity;
 
-    if (productQuantity !== undefined && orderQuantity !== undefined) {
-      if (productQuantity < orderQuantity) {
-        throw new Error(
-          `Insufficient stock. Available: ${productQuantity}, Requested: ${orderQuantity}`
-        );
-      }
-      // Calculate the new product quantity after placing the order
-      const newProductQuantity = productQuantity - orderQuantity;
-      product.productInventory.inventory.quantity = newProductQuantity;
+			//! IF CURRENT PRODUCT QUANTITY IS 0, THEN MAKE INSTOCK FALSE
+			if (newProductQuantity === 0) {
+				product.productInventory.inventory.inStock = false;
+				console.log("Product is now out of stock.");
+			}
 
-      if (newProductQuantity === 0) {
-        product.productInventory.inventory.inStock = false;
-        console.log("Product is now out of stock.");
-      }
+			//* Save the updated product quantity in the database
+			await product.save();
 
-      // Save the updated product quantity in the database
-      await product.save();
+			console.log(
+				`Updated product quantity. New quantity: ${newProductQuantity}`
+			);
+		} else {
+			throw new Error("Invalid product or order quantity");
+		}
 
-      console.log(
-        `Updated product quantity. New quantity: ${newProductQuantity}`
-      );
-    } else {
-      throw new Error("Invalid product or order quantity");
-    }
+		// ! IF PRODUCT ID OF ORDER IS NOT PRESENT IN PRODUCT COLLECTION
+		if (!product) {
+			throw new Error(`Product with id ${productId} not found`);
+		}
 
-    // return;
-
-    if (!product) {
-      throw new Error(`Product with id ${productId} not found`);
-    }
-
-    console.log(order);
-    const result = await OrderModel.create(order);
-    return result;
-  } catch (error: unknown) {
-    // Ensure the error is an instance of Error before accessing its properties
-    if (error instanceof Error) {
-      // Check for casting error
-      if (error.name === "CastError") {
-        throw new Error(`Product with id ${productId} not found`);
-      }
-      // Re-throw any other known errors
-      throw new Error(error.message);
-    } else {
-      // Handle cases where error is not an instance of Error
-      throw new Error("An unexpected error occurred.");
-    }
-  }
+		// console.log(order);
+		// ! ========== POST NEW ORDER =====================
+		const result = await OrderModel.create(order);
+		return result;
+	} catch (error: unknown) {
+			if (error instanceof Error) {
+			// ! ERROR HANDLED
+			if (error.name === "CastError") {
+				throw new Error(`Product with id ${productId} not found`);
+			}
+				throw new Error(error.message);
+		} else {
+		throw new Error("An unexpected error occurred.");
+		}
+	}
 };
 
 // * ---------------- CREATE ORDER BY ID -----------------------------
@@ -83,18 +83,18 @@ const createOrderIntoDB = async (order: IOrder) => {
 
 //* ---------------- GET ALL ORDERS FROM DB -----------------------------
 const getAllOrdersFromDB = async () => {
-  const result = await OrderModel.find();
-  return result;
+	const result = await OrderModel.find();
+	return result;
 };
 
 //* ---------------- GET ORDERS BY EMAIL FROM DB -----------------------------
 const getOrdersByEmail = async (email: string) => {
-  const result = await OrderModel.find({ email }); // Find orders with the specified email
-  return result;
+	const result = await OrderModel.find({ email }); // Find orders with the specified email
+	return result;
 };
 
 export const OrderServices = {
-  createOrderIntoDB,
-  getAllOrdersFromDB,
-  getOrdersByEmail,
+	createOrderIntoDB,
+	getAllOrdersFromDB,
+	getOrdersByEmail,
 };
