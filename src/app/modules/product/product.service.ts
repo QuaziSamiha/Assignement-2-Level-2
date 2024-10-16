@@ -14,6 +14,7 @@ const createProductIntoDB = async (product: IProduct) => {
 //   return result;
 // };
 
+//* ---------------- GET ALL PRODUCTS FROM DB AND SEARCH PRODUCT BY KEY WORD -----------------------------
 const getAllProductsFromDB = async (searchTerm?: string) => {
   let query = {};
 
