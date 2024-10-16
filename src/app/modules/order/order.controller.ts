@@ -4,22 +4,34 @@ import orderZodSchema from "./order.zod.validation";
 
 //? ==================================== CREATE ORDER =========================================
 const createOrder = async (req: Request, res: Response) => {
+  // console.log("create order", req.body);
   try {
     const orderData = req.body;
-    console.log(orderData);
-    const zodParsedData = orderZodSchema.parse(orderData); //! zod validation
+    // console.log(orderData);
+    const zodParsedData = orderZodSchema.parse(orderData); //! zod validation 
+    console.log("zodParsedData", zodParsedData);
+
     const result = await OrderServices.createOrderIntoDB(zodParsedData);
+    // console.log("result", result);
     res.status(200).json({
       success: true,
       message: "Order is created sam",
       data: result,
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error to place new order samiha",
-      error,
-    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({
+        success: false,
+        message: "Error to place new order samiha",
+        error: error.message, 
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "An unexpected error occurred",
+        error: String(error), 
+      });
+    }
   }
 };
 
@@ -29,6 +41,7 @@ const getAllOrders = async (req: Request, res: Response) => {
     const { email } = req.query;
 
     if (!email) {
+			// ! GET ALL ORDER OF ALL EMAIL USER
       const result = await OrderServices.getAllOrdersFromDB();
       res.status(200).json({
         success: true,
@@ -36,6 +49,7 @@ const getAllOrders = async (req: Request, res: Response) => {
         data: result,
       });
     } else {
+			//! GET ORDERS BY SPECIFIED EMAIL USER
       const result = await OrderServices.getOrdersByEmail(email as string);
       res.status(200).json({
         success: true,
